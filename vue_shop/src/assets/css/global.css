@@ -1,0 +1,10 @@
+/* 全局样式表 */
+html, body, #app {
+    margin: 0;
+    padding: 0;
+    border: none;
+    height: 100%;
+}
+div {
+    box-sizing: border-box;
+}
