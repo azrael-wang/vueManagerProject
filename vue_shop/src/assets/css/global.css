@@ -8,3 +8,7 @@ html, body, #app {
 div {
     box-sizing: border-box;
 }
+/* 调整elementUI */
+.el-menu {
+    border: none;
+}
