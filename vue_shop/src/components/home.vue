@@ -3,7 +3,7 @@
         <el-header>
             <div class="logoBox">
                 <img src="../assets/homeLogo.jpeg" alt="">
-                <span>王逼逼后台管理系统</span>
+                <span>后台管理系统</span>
             </div>
             <el-button type="info" @click="logout">退出</el-button>
         </el-header>
@@ -16,14 +16,16 @@
                     @click="toggleMenu"></i>
                   </template>
                 </div>
-                <el-menu default-active="2"
+                <el-menu
+                default-active="/users"
                 background-color="#D3DCE6"
                 active-text-color="#409eff"
                 unique-opened
                 :collapse="isDrop"
                 collapse-transition
+                router
                 >
-                    <el-submenu :index="item.id+''"
+                    <el-submenu :index="item.id + ''"
                     v-for="(item, index) in menuList"
                     :key="item.id">
                         <template slot="title">
@@ -32,8 +34,10 @@
                           <span>{{item.authName}}</span>
                         </template>
         <el-menu-item-group>
-          <el-menu-item :index="subItem.id+''" v-for="subItem in item.children"
-          :key="subItem.id">
+          <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children"
+          :key="subItem.id"
+          @click="saveNavState(subItem.path)"
+          >
             <template>
             <i class="el-icon-apple"></i>
             <span>{{subItem.authName}}</span>
@@ -43,7 +47,9 @@
       </el-submenu>
     </el-menu>
             </el-aside>
-            <el-main>Main</el-main>
+            <el-main>
+              <router-view></router-view>
+            </el-main>
         </el-container>
     </el-container>
 </template>
@@ -62,6 +68,7 @@ export default {
       ],
       // TODO 做侧边栏收放
       isDrop: false,
+      activePath: '',
     };
   },
   methods: {
@@ -76,12 +83,18 @@ export default {
         console.log(this.menuList);
       }
     },
+    // TODO 保存导航链接 目的：刷新时当前导航高亮
+    saveNavState(path) {
+      window.sessionStorage.setItem('activePath', path);
+      this.activePath = path;
+    },
     toggleMenu() {
       this.isDrop = !this.isDrop;
     },
   },
   created() {
     this.getMenuList();
+    this.activePath = window.sessionStorage.getItem('activePath');
   },
 };
 </script>
