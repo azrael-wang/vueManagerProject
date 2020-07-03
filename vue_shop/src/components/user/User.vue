@@ -74,40 +74,25 @@
                 <el-table-column
                 label="操作"
                 >
-                  <el-tooltip
-                  content="编辑"
-                  placement="top"
-                  :enterable="false"
-                  >
+                <template slot-scope="scope">
                     <el-button class="el-icon-edit"
                     type="primary"
                     size="mini"
                     circle
+                    @click="showEdit(scope.row.id)"
                     ></el-button>
-                  </el-tooltip>
-                  <el-tooltip
-                  content="删除"
-                  placement="top"
-                  :enterable="false"
-                  >
                     <el-button class="el-icon-delete"
                     type="danger"
                     size="mini"
                     circle
+                    @click="delUser(scope.row.id)"
                     ></el-button>
-                  </el-tooltip>
-                  <el-tooltip
-                  content="分配角色"
-                  placement="top"
-                  :enterable="false"
-                  >
                     <el-button class="el-icon-setting"
                     type="info"
                     size="mini"
                     circle
                     ></el-button>
-                  </el-tooltip>
-
+                </template>
                 </el-table-column>
               </el-table>
             </el-col>
@@ -127,6 +112,7 @@
         </el-col>
         </el-row>
       </el-card>
+      <!-- 添加用户 -->
       <el-dialog
         title="添加用户"
         :visible.sync="addUserVisible"
@@ -136,7 +122,6 @@
         <!-- 内容区域 -->
         <el-form
         :model="addUserForm"
-        status-icon
         :rules="addUserRules"
         ref="addUserFormRef"
         label-width="100px"
@@ -144,7 +129,7 @@
           <el-form-item label="用户名" prop="username">
             <el-input v-model="addUserForm.username" clearable></el-input>
           </el-form-item>
-           <el-form-item label="密码" prop="password">
+          <el-form-item label="密码" prop="password">
             <el-input type="password" v-model="addUserForm.password" clearable></el-input>
           </el-form-item>
           <el-form-item label="邮箱" prop="email">
@@ -165,6 +150,43 @@
           <el-button type="primary" @click="addUser">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 编辑用户 -->
+      <el-dialog
+        title="修改用户信息"
+        :visible.sync="editUserVisible"
+        width="50%"
+        @close="editDialogClosed"
+        >
+        <!-- 内容区域 -->
+        <el-form
+        :model="editForm"
+        :rules="editUserRules"
+        ref="editUserFormRef"
+        label-width="100px"
+        >
+        <el-form-item label="用户名" prop="username">
+            <el-input v-model="editForm.username" clearable
+            disabled
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input
+            v-model="editForm.email"
+            clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" prop="mobile">
+            <el-input
+            v-model="editForm.mobile"
+            clearable
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editUserVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editUser">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
 </template>
 
@@ -182,6 +204,7 @@ export default {
     };
     const checkMobile = (rule, value, cb) => {
       // 验证邮箱
+      console.log(value);
       const regMobile = /^[1][3,4,5,7,8][0-9]{9}$/;
       if (regMobile.test(value)) {
         return cb();
@@ -197,16 +220,19 @@ export default {
         pagenum: 1,
         pagesize: 2,
       },
-      // 添加用户弹框
+      // TODO 添加用户弹框
       addUserVisible: false,
       // TODO 添加用户表单对象
+      editUserVisible: false,
       addUserForm: {
         username: '',
         password: '',
         email: '',
         mobile: '',
       },
-      // TODO 添加用户表单验证对象
+      // TODO 编辑用户数据对象
+      editForm: {},
+      // TODO 添加用户表单认证规则
       addUserRules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -226,6 +252,15 @@ export default {
             trigger: 'blur',
           },
         ],
+        email: [
+          { validator: checkEmail, trigger: 'blur' },
+        ],
+        mobile: [
+          { validator: checkMobile, trigger: 'blur' },
+        ],
+      },
+      // TODO 编辑用户认证规则
+      editUserRules: {
         email: [
           { validator: checkEmail, trigger: 'blur' },
         ],
@@ -290,6 +325,53 @@ export default {
         this.getUserList();
         return false;
       });
+    },
+    // TODO 编辑用户
+    editUser() {
+      this.$refs.editUserFormRef.validate(async (vaild) => {
+        console.log(vaild);
+        if (!vaild) return this.$message.error('信息不完整');
+        const { data: res } = await this.$http.put(`users/${this.editForm.id}`,
+          {
+            email: this.editForm.email,
+            mobile: this.editForm.mobile,
+          });
+        if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
+        this.$message.success(res.meta.msg);
+        this.editUserVisible = false;
+        this.getUserList();
+        return false;
+      });
+    },
+    // TODO 编辑用户清空状态
+    editDialogClosed() {
+      this.$refs.editUserFormRef.resetFields();
+    },
+    // TODO 编辑用户dialog展示并获取id
+    async showEdit(id) {
+      const { data: res } = await this.$http.get(`users/${id}`);
+      if (res.meta.status !== 200) return this.$message.error('查询失败');
+      console.log('-----');
+      console.log(res);
+      this.editForm = res.data;
+      this.editUserVisible = true;
+      return false;
+    },
+    // TODO 删除用户，使用MessageBox 返回Prmise对象 使用async,await修饰
+    async delUser(id) {
+      const messageBoxRes = await this.$confirm('此操作将永久删除该文件, 是否继续?', '友情提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }).catch((err) => err);
+      console.log(messageBoxRes);
+      if (messageBoxRes !== 'confirm') return this.$message.info('取消删除');
+      const { data: res } = await this.$http.delete(`users/${id}`);
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
+      this.$message.success(res.meta.msg);
+      this.getUserList();
+      return false;
     },
   },
 };
