@@ -6,6 +6,7 @@ import Welcome from '@/components/welcome.vue';
 import User from '@/components/user/User.vue';
 import rightsList from '@/components/rights/rightsList.vue';
 import role from '@/components/rights/role.vue';
+import cate from '@/components/goods/cate.vue';
 
 Vue.use(VueRouter);
 const routes = [
@@ -31,7 +32,10 @@ const routes = [
       path: '/roles',
       component: role,
     },
-
+    {
+      path: '/categories',
+      component: cate,
+    },
     ],
   },
 ];
