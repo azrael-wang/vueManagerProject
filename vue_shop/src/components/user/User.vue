@@ -91,6 +91,7 @@
                     type="info"
                     size="mini"
                     circle
+                    @click="showUserSet(scope.row)"
                     ></el-button>
                 </template>
                 </el-table-column>
@@ -187,6 +188,40 @@
           <el-button type="primary" @click="editUser">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 分配权限-->
+      <el-dialog
+        title="请选择要分配的角色名称"
+        :visible.sync="setUserVisible"
+        width="30%"
+        @close="clearSelected"
+        >
+        <el-row class="mb24">
+          <el-col>
+          <span>名称：{{userInfo.username}}</span>
+          </el-col>
+        </el-row>
+        <el-row class="mb24">
+          <el-col>
+          <span>角色：{{userInfo.role_name}}</span>
+          </el-col>
+        </el-row>
+        <el-row class="mb24">
+          <el-col>
+            <el-select v-model="setSelected" placeholder="请选择">
+              <el-option
+                v-for="item in setLists"
+                :key="item.id"
+                :label="item.roleName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-col>
+        </el-row>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="setUserVisible = false">取 消</el-button>
+          <el-button type="primary" @click="setUserConfim">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
 </template>
 
@@ -213,6 +248,7 @@ export default {
       return false;
     };
     return {
+      userInfo: [],
       userList: [],
       total: 0,
       queryInfo: {
@@ -224,6 +260,8 @@ export default {
       addUserVisible: false,
       // TODO 添加用户表单对象
       editUserVisible: false,
+      // TODO 分配权限弹框
+      setUserVisible: false,
       addUserForm: {
         username: '',
         password: '',
@@ -259,6 +297,9 @@ export default {
           { validator: checkMobile, trigger: 'blur' },
         ],
       },
+      // TODO 分配权限列表 / 数据
+      setLists: [],
+      setSelected: '',
       // TODO 编辑用户认证规则
       editUserRules: {
         email: [
@@ -373,6 +414,33 @@ export default {
       this.getUserList();
       return false;
     },
+    // TODO 获取所有角色列表
+    async showUserSet(role) {
+      // console.log('role');
+      // console.log(role);
+      this.userInfo = role;
+      const { data: res } = await this.$http.get('roles');
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
+      this.$message.success(res.meta.msg);
+      this.setLists = res.data;
+      this.setUserVisible = true;
+      return false;
+    },
+    // TODO 分配角色
+    async setUserConfim() {
+      if (!this.setSelected) return this.$message.error('请选择修改得权限');
+      const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, { rid: this.setSelected });
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
+      this.$message.success(res.meta.msg);
+      this.getUserList();
+      this.setUserVisible = false;
+      return false;
+    },
+    // TODO 清空分配角色dialog数据
+    clearSelected() {
+      this.setSelected = '';
+      this.userInfo = {};
+    },
   },
 };
 </script>
@@ -386,5 +454,8 @@ export default {
   }
   .el-pagination {
     margin-top: 12px;
+  }
+  .mb24 {
+    margin-bottom: 24px;
   }
 </style>

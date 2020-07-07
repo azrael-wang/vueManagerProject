@@ -12,3 +12,12 @@ div {
 .el-menu {
     border: none;
 }
+.el-table .warning-row {
+    background-color: oldlace ;
+  }
+.el-table .success-row {
+background-color: #f0f9eb ;
+}
+.mt24 {
+    margin-top: 24px;
+}
