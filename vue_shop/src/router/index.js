@@ -7,6 +7,7 @@ import User from '@/components/user/User.vue';
 import rightsList from '@/components/rights/rightsList.vue';
 import role from '@/components/rights/role.vue';
 import cate from '@/components/goods/cate.vue';
+import params from '@/components/goods/params.vue';
 
 Vue.use(VueRouter);
 const routes = [
@@ -36,9 +37,18 @@ const routes = [
       path: '/categories',
       component: cate,
     },
+    {
+      path: '/params',
+      component: params,
+    },
     ],
   },
 ];
+// TODO 取消ELEMENTUI 点击重复路由报错问题
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch((err) => err);
+};
 const router = new VueRouter({
   routes,
 });

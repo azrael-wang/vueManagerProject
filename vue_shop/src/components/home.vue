@@ -80,7 +80,7 @@ export default {
       const { data: res } = await this.$http.get('menus');
       if (res.meta.status === 200) {
         this.menuList = res.data;
-        console.log(this.menuList);
+        // console.log(this.menuList);
       }
     },
     // TODO 保存导航链接 目的：刷新时当前导航高亮

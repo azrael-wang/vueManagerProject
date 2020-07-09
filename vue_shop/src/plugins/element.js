@@ -31,9 +31,15 @@ import
   Select,
   Option,
   Cascader,
+  Alert,
+  Tabs,
+  TabPane,
 } from 'element-ui';
 
 Vue.use(Button);
+Vue.use(TabPane);
+Vue.use(Tabs);
+Vue.use(Alert);
 Vue.use(Tree);
 Vue.use(Cascader);
 Vue.use(Select);
