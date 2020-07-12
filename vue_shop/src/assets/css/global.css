@@ -30,3 +30,6 @@ background-color: #f0f9eb ;
 .mr12 {
     margin-right: 12px;
 }
+.ql-editor {
+    min-height: 300px;
+}
