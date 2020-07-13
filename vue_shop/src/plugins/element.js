@@ -1,4 +1,6 @@
 import Vue from 'vue';
+// import Timeline from './timeline/index.js';
+// import TimelineItem from './timeline-item/index';
 import
 {
   Button,
@@ -40,9 +42,13 @@ import
   Checkbox,
   Upload,
   Image,
+  Timeline,
+  TimelineItem,
 } from 'element-ui';
 
 Vue.use(Button);
+Vue.use(Timeline);
+Vue.use(TimelineItem);
 Vue.use(Checkbox);
 Vue.use(Upload);
 Vue.use(Image);
