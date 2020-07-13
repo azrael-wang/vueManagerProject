@@ -11,6 +11,7 @@ import params from '@/components/goods/params.vue';
 import goods from '@/components/goods/goods.vue';
 import goodsAdd from '@/components/goods/add.vue';
 import orders from '@/components/orders/orders.vue';
+import reports from '@/components/reports/reports.vue';
 
 Vue.use(VueRouter);
 const routes = [
@@ -55,6 +56,10 @@ const routes = [
     {
       path: '/orders',
       component: orders,
+    },
+    {
+      path: '/reports',
+      component: reports,
     },
     ],
   },
